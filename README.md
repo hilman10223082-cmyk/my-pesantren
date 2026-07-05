@@ -2,8 +2,7 @@
 
 Aplikasi pendukung administrasi dan akademik pesantren, dibangun dengan
 arsitektur **microservices terdistribusi** sesuai *Software Requirements
-Specification (SRS) v1.0* — Mata Kuliah Pemrosesan Data Terdistribusi,
-Kelompok 1.
+Specification (SRS) v1.0* — Mata Kuliah Pemrosesan Data Terdistribusi.
 
 Sistem terdiri atas 5 modul utama yang berjalan sebagai layanan independen
 dengan basis data masing-masing (*database-per-service*): **Presensi**,
@@ -160,4 +159,4 @@ prototipe ini mudah dijalankan tanpa infrastruktur berat:
 
 ## Lisensi
 
-Proyek tugas akademik — Kelompok 1, Mata Kuliah Pemrosesan Data Terdistribusi.
+Proyek tugas akademik — Mata Kuliah Pemrosesan Data Terdistribusi.
