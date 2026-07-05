@@ -1,0 +1,14 @@
+{
+  "name": "perizinan-service",
+  "version": "1.0.0",
+  "description": "Microservice perizinan untuk My Pesantren (database-per-service)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "amqplib": "^0.10.4"
+  }
+}

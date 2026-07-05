@@ -1,0 +1,102 @@
+version: "3.8"
+
+# Orkestrasi seluruh arsitektur My Pesantren sesuai SRS Bab 6:
+# - database-per-service (setiap service punya file data sendiri di ./data)
+# - message broker (RabbitMQ) untuk komunikasi event-driven antar service
+# - API Gateway sebagai single entry point
+#
+# Jalankan dengan: docker-compose up --build
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: mypesantren-broker
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI (guest/guest)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  presensi-service:
+    build: ./services/presensi-service
+    container_name: presensi-service
+    environment:
+      - PORT=4001
+      - BROKER_URL=amqp://guest:guest@rabbitmq:5672
+    volumes:
+      - ./data:/data
+    depends_on:
+      - rabbitmq
+
+  pembayaran-service:
+    build: ./services/pembayaran-service
+    container_name: pembayaran-service
+    environment:
+      - PORT=4002
+      - BROKER_URL=amqp://guest:guest@rabbitmq:5672
+    volumes:
+      - ./data:/data
+    depends_on:
+      - rabbitmq
+
+  perizinan-service:
+    build: ./services/perizinan-service
+    container_name: perizinan-service
+    environment:
+      - PORT=4003
+      - BROKER_URL=amqp://guest:guest@rabbitmq:5672
+    volumes:
+      - ./data:/data
+    depends_on:
+      - rabbitmq
+
+  tahfidz-service:
+    build: ./services/tahfidz-service
+    container_name: tahfidz-service
+    environment:
+      - PORT=4004
+    volumes:
+      - ./data:/data
+
+  donasi-service:
+    build: ./services/donasi-service
+    container_name: donasi-service
+    environment:
+      - PORT=4005
+    volumes:
+      - ./data:/data
+
+  notifikasi-service:
+    build: ./services/notifikasi-service
+    container_name: notifikasi-service
+    environment:
+      - PORT=4006
+      - BROKER_URL=amqp://guest:guest@rabbitmq:5672
+    volumes:
+      - ./data:/data
+    depends_on:
+      - rabbitmq
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - PRESENSI_URL=http://presensi-service:4001
+      - PEMBAYARAN_URL=http://pembayaran-service:4002
+      - PERIZINAN_URL=http://perizinan-service:4003
+      - TAHFIDZ_URL=http://tahfidz-service:4004
+      - DONASI_URL=http://donasi-service:4005
+      - NOTIFIKASI_URL=http://notifikasi-service:4006
+    depends_on:
+      - presensi-service
+      - pembayaran-service
+      - perizinan-service
+      - tahfidz-service
+      - donasi-service
+      - notifikasi-service

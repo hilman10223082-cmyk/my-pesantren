@@ -1,0 +1,13 @@
+{
+  "name": "donasi-service",
+  "version": "1.0.0",
+  "description": "Microservice donasi untuk My Pesantren (database-per-service)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
